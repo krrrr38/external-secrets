@@ -107,6 +107,14 @@ jobs:
         gcloud projects add-iam-policy-binding external-secrets-operator --member "serviceAccount:${GCP_GSA_NAME}@${GCP_PROJECT_ID}.iam.gserviceaccount.com" --role "roles/secretmanager.secretAccessor"
         gcloud iam service-accounts add-iam-policy-binding ${GCP_GSA_NAME}@${GCP_PROJECT_ID}.iam.gserviceaccount.com --role roles/iam.workloadIdentityUser --member "serviceAccount:${GCP_PROJECT_ID}.svc.id.goog[default/${GCP_KSA_NAME}]"
 
+    - name: Login to Docker
+      uses: docker/login-action@v1
+      if: env.GHCR_USERNAME != ''
+      with:
+        registry: ghcr.io
+        username: ${{ secrets.GHCR_USERNAME }}
+        password: ${{ secrets.GHCR_TOKEN }}
+
     - name: Run e2e Tests for GCP
       run: |
         export E2E_VERSION=$GITHUB_SHA
