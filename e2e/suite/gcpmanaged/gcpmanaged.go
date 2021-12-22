@@ -15,7 +15,6 @@ package gcpmanaged
 import (
 	"os"
 
-	"github.com/external-secrets/external-secrets/e2e/framework/util"
 	// nolint
 	. "github.com/onsi/ginkgo"
 	// nolint
@@ -25,6 +24,7 @@ import (
 	. "github.com/onsi/gomega"
 
 	"github.com/external-secrets/external-secrets/e2e/framework"
+	"github.com/external-secrets/external-secrets/e2e/framework/util"
 	"github.com/external-secrets/external-secrets/e2e/suite/common"
 	"github.com/external-secrets/external-secrets/e2e/suite/gcp"
 )

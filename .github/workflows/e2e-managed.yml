@@ -6,7 +6,7 @@ on:
 
 env:
   # Common versions
-  GO_VERSION: '1.16'
+  GO_VERSION: '1.17'
   GOLANGCI_VERSION: 'v1.33'
   DOCKER_BUILDX_VERSION: 'v0.4.2'
 
@@ -26,7 +26,7 @@ env:
   TENANT_ID: ${{ secrets.TENANT_ID}}
   VAULT_URL: ${{ secrets.VAULT_URL}}
   E2E_IMAGE_REGISTRY: ghcr.io/external-secrets/external-secrets
-  E2E_VERSION: ${{ env.GITHUB_SHA }}
+  E2E_VERSION: test
 
 name: e2e tests
 
@@ -107,10 +107,15 @@ jobs:
         gcloud projects add-iam-policy-binding external-secrets-operator --member "serviceAccount:${GCP_GSA_NAME}@${GCP_PROJECT_ID}.iam.gserviceaccount.com" --role "roles/secretmanager.secretAccessor"
         gcloud iam service-accounts add-iam-policy-binding ${GCP_GSA_NAME}@${GCP_PROJECT_ID}.iam.gserviceaccount.com --role roles/iam.workloadIdentityUser --member "serviceAccount:${GCP_PROJECT_ID}.svc.id.goog[default/${GCP_KSA_NAME}]"
 
-        
-    
-    - name: Debug
-      run: kubectl get nodes
+    - name: Run e2e Tests for GCP
+      env:
+        E2E_VERSION: ${{ env.GITHUB_SHA }}
+        PR_IMG_TAG: ${{ env.GITHUB_SHA }}
+        BUILD_ARGS: "--load"
+      run: |
+        export PATH=$PATH:$(go env GOPATH)/bin
+        go get github.com/onsi/ginkgo/ginkgo
+        make test.e2e.managed
 
 
   # Repo owner has commented /ok-to-test on a (fork-based) pull request
