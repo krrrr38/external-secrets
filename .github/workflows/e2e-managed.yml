@@ -111,7 +111,6 @@ jobs:
       env:
         E2E_VERSION: ${{ env.GITHUB_SHA }}
         PR_IMG_TAG: ${{ env.GITHUB_SHA }}
-        BUILD_ARGS: "--load"
       run: |
         export PATH=$PATH:$(go env GOPATH)/bin
         go get github.com/onsi/ginkgo/ginkgo
