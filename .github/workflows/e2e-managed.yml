@@ -122,7 +122,7 @@ jobs:
         export PR_IMG_TAG=$GITHUB_SHA
         export PATH=$PATH:$(go env GOPATH)/bin
         go get github.com/onsi/ginkgo/ginkgo
-        make test.e2e.managed
+        make test.e2e.managed FOCUS="gcpmanaged"
 
 
   # Repo owner has commented /ok-to-test on a (fork-based) pull request

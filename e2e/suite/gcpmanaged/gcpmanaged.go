@@ -30,7 +30,7 @@ import (
 )
 
 var _ = Describe("[gcpmanaged] ", func() {
-	if os.Getenv("FOCUS") == "gcp_managed" {
+	if os.Getenv("FOCUS") == "gcpmanaged" {
 		f := framework.New("eso-gcp-managed")
 		projectID := os.Getenv("GCP_PROJECT_ID_MANAGED")
 		prov := &gcp.GcpProvider{}

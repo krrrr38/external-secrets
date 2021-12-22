@@ -44,7 +44,7 @@ test.managed: e2e-remote-values e2e-image.managed  ## Run e2e tests against curr
 e2e-remote-values:
 	sed -i "s|repository: [^ ]*|repository: $(IMAGE_REGISTRY)|g" k8s/eso.values.yaml
 	sed -i "s|tag: [^ ]*|tag: $(PR_IMG_TAG)|g" k8s/eso.values.yaml
-	sed -i "s|respository: [^ ]*|repository: $(IMAGE_REGISTRY)|g" k8s/eso.scoped.values.yaml
+	sed -i "s|repository: [^ ]*|repository: $(IMAGE_REGISTRY)|g" k8s/eso.scoped.values.yaml
 	sed -i "s|tag: [^ ]*|tag: $(PR_IMG_TAG)|g" k8s/eso.scoped.values.yaml
 
 
