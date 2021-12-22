@@ -62,7 +62,7 @@ e2e-image.managed: e2e-bin
 	mkdir -p k8s
 	$(MAKE) -C ../ helm.generate
 	cp -r ../deploy ./k8s
-	docker build $(BUILD_ARGS) -t ghcr.io/external-secrets/external-secrets-e2e:$(PR_IMG_TAG) .
+	docker build $(BUILD_ARGS) -t ghcr.io/external-secrets/external-secrets-e2e:$(E2E_VERSION) .
 
 stop-kind: ## Stop kind cluster
 	kind delete cluster \
