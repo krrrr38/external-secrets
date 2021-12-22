@@ -108,10 +108,9 @@ jobs:
         gcloud iam service-accounts add-iam-policy-binding ${GCP_GSA_NAME}@${GCP_PROJECT_ID}.iam.gserviceaccount.com --role roles/iam.workloadIdentityUser --member "serviceAccount:${GCP_PROJECT_ID}.svc.id.goog[default/${GCP_KSA_NAME}]"
 
     - name: Run e2e Tests for GCP
-      env:
-        E2E_VERSION: ${{ env.GITHUB_SHA }}
-        PR_IMG_TAG: ${{ env.GITHUB_SHA }}
       run: |
+        export E2E_VERSION=$GITHUB_SHA
+        export PR_IMG_TAG=$GITHUB_SHA
         export PATH=$PATH:$(go env GOPATH)/bin
         go get github.com/onsi/ginkgo/ginkgo
         make test.e2e.managed
