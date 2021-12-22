@@ -52,12 +52,25 @@ func NewgcpProvider(f *framework.Framework, credentials, projectID string) *GcpP
 	return prov
 }
 
+func (s *GcpProvider) getClient(ctx context.Context, credentials string) (client *secretmanager.Client, err error) {
+	if credentials == "" {
+		ts, err := google.DefaultTokenSource(ctx, gcpsm.CloudPlatformRole)
+		Expect(err).ToNot(HaveOccurred())
+		client, err = secretmanager.NewClient(ctx, option.WithTokenSource(ts))
+		Expect(err).ToNot(HaveOccurred())
+	} else {
+		config, err := google.JWTConfigFromJSON([]byte(s.credentials), gcpsm.CloudPlatformRole)
+		Expect(err).ToNot(HaveOccurred())
+		ts := config.TokenSource(ctx)
+		client, err = secretmanager.NewClient(ctx, option.WithTokenSource(ts))
+		Expect(err).ToNot(HaveOccurred())
+	}
+	return client, err
+}
+
 func (s *GcpProvider) CreateSecret(key, val string) {
 	ctx := context.Background()
-	config, err := google.JWTConfigFromJSON([]byte(s.credentials), gcpsm.CloudPlatformRole)
-	Expect(err).ToNot(HaveOccurred())
-	ts := config.TokenSource(ctx)
-	client, err := secretmanager.NewClient(ctx, option.WithTokenSource(ts))
+	client, err := s.getClient(ctx, s.credentials)
 	Expect(err).ToNot(HaveOccurred())
 	defer client.Close()
 	// Create the request to create the secret.
@@ -86,10 +99,8 @@ func (s *GcpProvider) CreateSecret(key, val string) {
 
 func (s *GcpProvider) DeleteSecret(key string) {
 	ctx := context.Background()
-	config, err := google.JWTConfigFromJSON([]byte(s.credentials), gcpsm.CloudPlatformRole)
+	client, err := s.getClient(ctx, s.credentials)
 	Expect(err).ToNot(HaveOccurred())
-	ts := config.TokenSource(ctx)
-	client, err := secretmanager.NewClient(ctx, option.WithTokenSource(ts))
 	Expect(err).ToNot(HaveOccurred())
 	defer client.Close()
 	req := &secretmanagerpb.DeleteSecretRequest{
