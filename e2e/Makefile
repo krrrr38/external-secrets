@@ -6,6 +6,7 @@ IMG_TAG     = test
 IMG         = local/external-secrets-e2e:$(IMG_TAG)
 KIND_IMG    = "kindest/node:v1.21.1@sha256:69860bda5563ac81e3c0057d654b5253219618a22ec3a346306239bba8cfa1a6"
 BUILD_ARGS  ?=
+IMAGE_REGISTRY ?=
 export FOCUS := $(FOCUS)
 
 export E2E_IMAGE_REGISTRY ?=
@@ -41,10 +42,10 @@ test.managed: e2e-remote-values e2e-image.managed  ## Run e2e tests against curr
 	./run.sh
 
 e2e-remote-values:
-	sed -i "s|respository: [^ ]*|repository: $(E2E_IMAGE_REGISTRY)|g" k8s/eso.values.yaml
-	sed -i "s|tag: [^ ]*|tag: $(E2E_VERSION)|g" k8s/eso.values.yaml
-	sed -i "s|respository: [^ ]*|repository: $(E2E_IMAGE_REGISTRY)|g" k8s/eso.scoped.values.yaml
-	sed -i "s|tag: [^ ]*|tag: $(E2E_VERSION)|g" k8s/eso.scoped.values.yaml
+	sed -i "s|repository: [^ ]*|repository: $(IMAGE_REGISTRY)|g" k8s/eso.values.yaml
+	sed -i "s|tag: [^ ]*|tag: $(PR_IMG_TAG)|g" k8s/eso.values.yaml
+	sed -i "s|respository: [^ ]*|repository: $(IMAGE_REGISTRY)|g" k8s/eso.scoped.values.yaml
+	sed -i "s|tag: [^ ]*|tag: $(PR_IMG_TAG)|g" k8s/eso.scoped.values.yaml
 
 
 e2e-bin:
