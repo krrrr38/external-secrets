@@ -23,7 +23,9 @@ import (
 
 	// nolint
 	. "github.com/onsi/gomega"
+	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
+	"golang.org/x/oauth2/jwt"
 	"google.golang.org/api/option"
 	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 	v1 "k8s.io/api/core/v1"
@@ -54,12 +56,14 @@ func NewgcpProvider(f *framework.Framework, credentials, projectID string) *GcpP
 
 func (s *GcpProvider) getClient(ctx context.Context, credentials string) (client *secretmanager.Client, err error) {
 	if credentials == "" {
-		ts, err := google.DefaultTokenSource(ctx, gcpsm.CloudPlatformRole)
+		var ts oauth2.TokenSource
+		ts, err = google.DefaultTokenSource(ctx, gcpsm.CloudPlatformRole)
 		Expect(err).ToNot(HaveOccurred())
 		client, err = secretmanager.NewClient(ctx, option.WithTokenSource(ts))
 		Expect(err).ToNot(HaveOccurred())
 	} else {
-		config, err := google.JWTConfigFromJSON([]byte(s.credentials), gcpsm.CloudPlatformRole)
+		var config *jwt.Config
+		config, err = google.JWTConfigFromJSON([]byte(s.credentials), gcpsm.CloudPlatformRole)
 		Expect(err).ToNot(HaveOccurred())
 		ts := config.TokenSource(ctx)
 		client, err = secretmanager.NewClient(ctx, option.WithTokenSource(ts))

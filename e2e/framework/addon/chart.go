@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"time"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -90,6 +91,8 @@ func (c *HelmChart) Install() error {
 	if err != nil {
 		return fmt.Errorf("unable to run cmd: %w: %s %s", err, sout.String(), serr.String())
 	}
+
+	time.Sleep(3 * time.Second)
 
 	gcpProjectID := os.Getenv("GCP_PROJECT_ID")
 	gcpGSAName := os.Getenv("GCP_GSA_NAME")
