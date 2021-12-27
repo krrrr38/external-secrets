@@ -51,6 +51,8 @@ kubectl run --rm \
   --env="FOCUS=${FOCUS:-.*}" \
   --env="GCP_SM_SA_JSON=${GCP_SM_SA_JSON:-}" \
   --env="GCP_PROJECT_ID=${GCP_PROJECT_ID:-}" \
+  --env="GCP_GSA_NAME=${GCP_GSA_NAME:-}" \
+  --env="GCP_KSA_NAME=${GCP_KSA_NAME:-}" \
   --env="AZURE_CLIENT_ID=${AZURE_CLIENT_ID:-}" \
   --env="AZURE_CLIENT_SECRET=${AZURE_CLIENT_SECRET:-}" \
   --env="AKEYLESS_ACCESS_ID=${AKEYLESS_ACCESS_ID:-}" \
