@@ -22,9 +22,7 @@ import (
 
 	// nolint
 	// . "github.com/onsi/gomega"
-
 	"github.com/external-secrets/external-secrets/e2e/framework"
-	// "github.com/external-secrets/external-secrets/e2e/framework/util"
 	"github.com/external-secrets/external-secrets/e2e/suite/common"
 	"github.com/external-secrets/external-secrets/e2e/suite/gcp"
 )
@@ -38,11 +36,6 @@ var _ = Describe("[gcpmanaged] ", func() {
 		if projectID != "" {
 			prov = gcp.NewgcpProvider(f, "", projectID)
 		}
-		// _, kubeClientSet, _ := framework.NewConfig()
-		// annotations := make(map[string]string)
-		// annotations["iam.gke.io/gcp-service-account"] = "external-secrets@external-secrets-operator.iam.gserviceaccount.com"
-		// _, err := util.UpdateKubeSA("eso-external-secrets", kubeClientSet, "default", annotations)
-		// Expect(err).NotTo(HaveOccurred())
 
 		DescribeTable("sync secrets", framework.TableFunc(f, prov),
 			Entry(common.SimpleDataSync(f)),

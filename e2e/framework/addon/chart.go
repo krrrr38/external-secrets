@@ -92,8 +92,8 @@ func (c *HelmChart) Install() error {
 	}
 
 	gcpProjectID := os.Getenv("GCP_PROJECT_ID")
-	gcpGSAName:= os.Getenv("GCP_GSA_NAME")
-	gcpKSAName:= os.Getenv("GCP_KSA_NAME")
+	gcpGSAName := os.Getenv("GCP_GSA_NAME")
+	gcpKSAName := os.Getenv("GCP_KSA_NAME")
 
 	cmd = exec.Command(
 		"kubectl", "annotate", "serviceaccount", gcpKSAName, "--namespace",
