@@ -16,6 +16,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
 
 	corev1 "k8s.io/api/core/v1"
@@ -85,8 +86,25 @@ func (c *HelmChart) Install() error {
 	cmd.Stdout = &sout
 	cmd.Stderr = &serr
 	err = cmd.Run()
+
 	if err != nil {
 		return fmt.Errorf("unable to run cmd: %w: %s %s", err, sout.String(), serr.String())
+	}
+
+	gcpProjectID := os.Getenv("GCP_PROJECT_ID")
+	gcpGSAName:= os.Getenv("GCP_GSA_NAME")
+	gcpKSAName:= os.Getenv("GCP_KSA_NAME")
+
+	cmd = exec.Command(
+		"kubectl", "annotate", "serviceaccount", gcpKSAName, "--namespace",
+		"default", fmt.Sprintf("iam.gke.io/gcp-service-account=%s@%s.iam.gserviceaccount.com", gcpGSAName, gcpProjectID),
+	)
+	cmd.Stdout = &sout
+	cmd.Stderr = &serr
+	err = cmd.Run()
+
+	if err != nil {
+		return fmt.Errorf("unable to annotate SA: %w: %s %s", err, sout.String(), serr.String())
 	}
 	return nil
 }
