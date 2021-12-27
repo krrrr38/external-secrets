@@ -43,6 +43,7 @@ type Config struct {
 type Addon interface {
 	Setup(*Config) error
 	Install() error
+	PostInstall() error
 	Logs() error
 	Uninstall() error
 }
@@ -55,6 +56,9 @@ func InstallGlobalAddon(addon Addon, cfg *Config) {
 	gomega.Expect(err).NotTo(gomega.HaveOccurred())
 
 	err = addon.Install()
+	gomega.Expect(err).NotTo(gomega.HaveOccurred())
+
+	err = addon.PostInstall()
 	gomega.Expect(err).NotTo(gomega.HaveOccurred())
 }
 

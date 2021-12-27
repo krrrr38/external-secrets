@@ -22,10 +22,11 @@ type Localstack struct {
 func NewLocalstack() *Localstack {
 	return &Localstack{
 		&HelmChart{
-			Namespace:    "default",
-			ReleaseName:  "localstack",
-			Chart:        "localstack-charts/localstack",
-			ChartVersion: "0.2.0",
+			Namespace:         "default",
+			ReleaseName:       "localstack",
+			ShouldPostInstall: false,
+			Chart:             "localstack-charts/localstack",
+			ChartVersion:      "0.2.0",
 			Repo: ChartRepo{
 				Name: "localstack-charts",
 				URL:  "https://localstack.github.io/helm-charts",
@@ -41,4 +42,8 @@ func (l *Localstack) Install() error {
 		return err
 	}
 	return util.WaitForURL("http://localstack.default/health")
+}
+
+func (l *Localstack) PostInstall() error {
+	return nil
 }

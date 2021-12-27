@@ -18,7 +18,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"time"
 
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -28,13 +27,14 @@ import (
 
 // HelmChart installs the specified Chart into the cluster.
 type HelmChart struct {
-	Namespace    string
-	ReleaseName  string
-	Chart        string
-	ChartVersion string
-	Repo         ChartRepo
-	Vars         []StringTuple
-	Values       []string
+	Namespace         string
+	ReleaseName       string
+	Chart             string
+	ChartVersion      string
+	Repo              ChartRepo
+	Vars              []StringTuple
+	Values            []string
+	ShouldPostInstall bool
 
 	config *Config
 }
@@ -92,16 +92,6 @@ func (c *HelmChart) Install() error {
 		return fmt.Errorf("unable to run cmd: %w: %s %s", err, sout.String(), serr.String())
 	}
 
-	time.Sleep(3 * time.Second)
-
-	gcpProjectID := os.Getenv("GCP_PROJECT_ID")
-	gcpGSAName := os.Getenv("GCP_GSA_NAME")
-	gcpKSAName := os.Getenv("GCP_KSA_NAME")
-
-	cmd = exec.Command(
-		"kubectl", "annotate", "serviceaccount", gcpKSAName, "--namespace",
-		"default", fmt.Sprintf("iam.gke.io/gcp-service-account=%s@%s.iam.gserviceaccount.com", gcpGSAName, gcpProjectID),
-	)
 	cmd.Stdout = &sout
 	cmd.Stderr = &serr
 	err = cmd.Run()
@@ -110,6 +100,30 @@ func (c *HelmChart) Install() error {
 		return fmt.Errorf("unable to annotate SA: %w: %s %s", err, sout.String(), serr.String())
 	}
 	return nil
+}
+
+// PostInstall prepares resources after installation e.g. annotates SAs.
+func (c *HelmChart) PostInstall() (err error) {
+	log.Logf("ShouldPostInstall: %t", c.ShouldPostInstall)
+	if c.ShouldPostInstall {
+		gcpProjectID := os.Getenv("GCP_PROJECT_ID")
+		gcpGSAName := os.Getenv("GCP_GSA_NAME")
+		gcpKSAName := os.Getenv("GCP_KSA_NAME")
+
+		var sout, serr bytes.Buffer
+
+		cmd := exec.Command(
+			"kubectl", "annotate", "serviceaccount", gcpKSAName, "--namespace",
+			"default", fmt.Sprintf("iam.gke.io/gcp-service-account=%s@%s.iam.gserviceaccount.com", gcpGSAName, gcpProjectID),
+		)
+		cmd.Stdout = &sout
+		cmd.Stderr = &serr
+		err := cmd.Run()
+		if err != nil {
+			return fmt.Errorf("unable to annotate SA: %w: %s, %s", err, sout.String(), serr.String())
+		}
+	}
+	return err
 }
 
 // Uninstall removes the chart aswell as the repo.

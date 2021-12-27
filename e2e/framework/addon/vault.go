@@ -110,6 +110,10 @@ func (l *Vault) Install() error {
 	return nil
 }
 
+func (l *Vault) PostInstall() error {
+	return nil
+}
+
 func (l *Vault) initVault() error {
 	sec := &v1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
